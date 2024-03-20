@@ -7,24 +7,51 @@ int a_presi = 0, b_presi = 0;
 
 void setup(char tabella[8][8]);
 void stampa(char tabella[8][8]);
-int spostamento_minori(char tabella[8][8], char giocatore, char opposto, int x, int y);
+int spostamento_minori(char tabella[8][8], char giocatore, char opposto, int x, int y, int scelta);
+int spostamento_maggiore(char tabella[8][8], char giocatore, char opposto, int x, int y, int scelta);
 void input(char tabella[8][8], char giocatore, char opposto);
 int abs(int x);
+int vittoria(char tabella[8][8]);
 
 int main()
 {
     char tabella[8][8];
     printf("Benvenuti al gioco di Dama\n");
     setup(tabella);
+    // tabella[1][7] = 'a';
+    // tabella[5][3] = 'A';
+    // tabella[4][4] = 'B';
+    // tabella[3][3] = 'a';
+    // tabella[3][5] = 'a';
+    // tabella[2][6] = 'a';
+    // tabella[2][2] = 'a';
     stampa(tabella);
     while (SI)
     {
         input(tabella, 'A', 'B');
+        if (vittoria(tabella) == 1)
+        {
+            printf("Il Giocatore A ha vinto!!\n");
+            return 0;
+        }
+        if (vittoria(tabella) == 2)
+        {
+            printf("Il Giocatore B ha vinto!!\n");
+            return 0;
+        }
         input(tabella, 'B', 'A');
+        if (vittoria(tabella) == 1)
+        {
+            printf("Il Giocatore A ha vinto!!\n");
+            return 0;
+        }
+        if (vittoria(tabella) == 2)
+        {
+            printf("Il Giocatore B ha vinto!!\n");
+            return 0;
+        }
     }
-    return 0;
 }
-
 void setup(char tabella[8][8])
 {
     for (int x = 0; x < 8; x++)
@@ -88,7 +115,7 @@ void stampa(char tabella[8][8])
     printf("Giocatore A tiene %d pedoni\n", a_presi);
     printf("Giocatore B tiene %d pedine\n", b_presi);
 }
-int spostamento_minori(char tabella[8][8], char giocatore, char opposto, int x, int y)
+int spostamento_minori(char tabella[8][8], char giocatore, char opposto, int x, int y, int scelta)
 {
     int controllo_coordinate2_negativo = (y - 2 >= 0 && x - 2 >= 0);
     int controllo_coordinate1_negativo = (y - 1 >= 0 && x - 1 >= 0);
@@ -132,14 +159,14 @@ int spostamento_minori(char tabella[8][8], char giocatore, char opposto, int x, 
     {
         if (tabella[y + 1][x - 1] == (opposto + 32))
         {
-            if (controllo_coordinate2_positivo && tabella[y + 2][x - 2] == ' ')
+            if (controllo_coordinate2_negativo && tabella[y + 2][x - 2] == ' ')
             {
                 tabella[y + 2][x - 2] = 'X';
             }
         }
         else if (tabella[y + 1][x - 1] == ' ')
         {
-            if (controllo_coordinate1_positivo)
+            if (controllo_coordinate1_negativo)
             {
                 tabella[y + 1][x - 1] = 'X';
             }
@@ -166,12 +193,93 @@ int spostamento_minori(char tabella[8][8], char giocatore, char opposto, int x, 
         {
             if (tabella[y][x] == 'X')
             {
-                stampa(tabella);
+                if (scelta == 1)
+                {
+                    stampa(tabella);
+                }
                 return 1;
             }
         }
     }
+    return 0;
+}
+int spostamento_maggiore(char tabella[8][8], char giocatore, char opposto, int x, int y, int scelta)
+{
+    int controllo_coordinate2_negativo = (y - 2 >= 0 && x - 2 >= 0);
+    int controllo_coordinate1_negativo = (y - 1 >= 0 && x - 1 >= 0);
+    int controllo_coordinate2_positivo = (y + 2 <= 7 && x + 2 <= 7);
+    int controllo_coordinate1_positivo = (y + 1 <= 7 && x + 1 <= 7);
 
+    if (tabella[y - 1][x - 1] == (opposto + 32))
+    {
+        if (controllo_coordinate2_negativo && tabella[y - 2][x - 2] == ' ')
+        {
+            tabella[y - 2][x - 2] = 'X';
+        }
+    }
+    else if (tabella[y - 1][x - 1] == ' ')
+    {
+        if (controllo_coordinate1_negativo)
+        {
+            tabella[y - 1][x - 1] = 'X';
+        }
+    }
+    if (tabella[y - 1][x + 1] == (opposto + 32))
+    {
+        if (controllo_coordinate2_positivo && tabella[y - 2][x + 2] == ' ')
+        {
+            tabella[y - 2][x + 2] = 'X';
+        }
+    }
+    else if (tabella[y - 1][x + 1] == ' ')
+    {
+        if (controllo_coordinate1_positivo)
+        {
+            tabella[y - 1][x + 1] = 'X';
+        }
+    }
+    if (tabella[y + 1][x - 1] == (opposto + 32))
+    {
+        if (controllo_coordinate2_positivo && tabella[y + 2][x - 2] == ' ')
+        {
+            tabella[y + 2][x - 2] = 'X';
+        }
+    }
+    else if (tabella[y + 1][x - 1] == ' ')
+    {
+        if (controllo_coordinate1_positivo)
+        {
+            tabella[y + 1][x - 1] = 'X';
+        }
+    }
+    if (tabella[y + 1][x + 1] == (opposto + 32))
+    {
+        if (controllo_coordinate2_positivo && tabella[y + 2][x + 2] == ' ')
+        {
+            tabella[y + 2][x + 2] = 'X';
+        }
+    }
+    else if (tabella[y + 1][x + 1] == ' ')
+    {
+        if (controllo_coordinate1_positivo)
+        {
+            tabella[y + 1][x + 1] = 'X';
+        }
+    }
+    for (y = 0; y < 8; y++)
+    {
+        for (x = 0; x < 8; x++)
+        {
+            if (tabella[y][x] == 'X')
+            {
+                if (scelta == 1)
+                {
+                    stampa(tabella);
+                }
+                return 1;
+            }
+        }
+    }
     return 0;
 }
 void input(char tabella[8][8], char giocatore, char opposto)
@@ -185,7 +293,6 @@ void input(char tabella[8][8], char giocatore, char opposto)
         scanf("%d", &x);
         x--;
         y--;
-        printf("Selezione Y:%d X:%d\n", y, x);
         if (tabella[y][x] == ' ')
         {
             printf("Hai selezionato una casella vuota\n");
@@ -194,7 +301,14 @@ void input(char tabella[8][8], char giocatore, char opposto)
         else if (tabella[y][x] == (giocatore + 32) || tabella[y][x] == giocatore)
         {
             continua = SI;
-            spostamento = spostamento_minori(tabella, giocatore, opposto, x, y);
+            if (tabella[y][x] == giocatore)
+            {
+                spostamento = spostamento_maggiore(tabella, giocatore, opposto, x, y, 1);
+            }
+            else if (tabella[y][x] == giocatore + 32)
+            {
+                spostamento = spostamento_minori(tabella, giocatore, opposto, x, y, 1);
+            }
         }
         else if (tabella[y][x] == (opposto + 32) || tabella[y][x] == opposto)
         {
@@ -209,7 +323,6 @@ void input(char tabella[8][8], char giocatore, char opposto)
         scanf("%d", &x1);
         x1--;
         y1--;
-        printf("Spostamento Y:%d X:%d\n", y1, x1);
         if (tabella[y1][x1] != 'X')
         {
             printf("Hai selezionato una casella vuota\n");
@@ -224,7 +337,6 @@ void input(char tabella[8][8], char giocatore, char opposto)
     {
         if (abs(x - x1) == 2)
         {
-            printf("Sono dentro\n Giocatore:%c\nABS:%d\n\n", giocatore, abs(x - x1));
             tabella[y1][x1] = tabella[y][x];
             tabella[y][x] = ' ';
             if (giocatore == 'A')
@@ -260,6 +372,27 @@ void input(char tabella[8][8], char giocatore, char opposto)
             tabella[y][x] = ' ';
         }
     }
+    if (giocatore == 'A')
+    {
+
+        for (x = 0; x < 8; x++)
+        {
+            if (tabella[0][x] == (giocatore + 32))
+            {
+                tabella[0][x] = giocatore;
+            }
+        }
+    }
+    if (giocatore == 'B')
+    {
+        for (x = 0; x < 8; x++)
+        {
+            if (tabella[7][x] == (giocatore + 32))
+            {
+                tabella[7][x] = giocatore;
+            }
+        }
+    }
     for (y = 0; y < 8; y++)
     {
         for (x = 0; x < 8; x++)
@@ -279,4 +412,77 @@ int abs(int x)
         return x * -1;
     }
     return x;
+}
+int vittoria(char tabella[8][8])
+{
+    int controllo_a = 0, controllo_b = 0;
+    for (int y = 0; y < 8; y++)
+    {
+        for (int x = 0; x < 8; x++)
+        {
+            if (tabella[y][x] == 'A' || tabella[y][x] == 'a')
+            {
+                controllo_a++;
+            }
+            if (tabella[y][x] == 'B' || tabella[y][x] == 'b')
+            {
+                controllo_b++;
+            }
+        }
+    }
+    if (controllo_a == 1)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            for (int x = 0; x < 8; x++)
+            {
+                if (tabella[y][x] == 'a')
+                {
+                    if (spostamento_minori(tabella, 'A', 'B', x, y, 0) == 0)
+                    {
+                        return 2;
+                    }
+                }
+                if (tabella[y][x] == 'A')
+                {
+                    if (spostamento_maggiore(tabella, 'A', 'B', x, y, 0) == 0)
+                    {
+                        return 2;
+                    }
+                }
+            }
+        }
+    }
+    if (controllo_b == 1)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            for (int x = 0; x < 8; x++)
+            {
+                if (tabella[y][x] == 'b')
+                {
+                    if (spostamento_minori(tabella, 'B', 'A', x, y, 0) == 0)
+                    {
+                        return 1;
+                    }
+                }
+                if (tabella[y][x] == 'B')
+                {
+                    if (spostamento_maggiore(tabella, 'B', 'A', x, y, 0) == 0)
+                    {
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+    if (controllo_a == 0)
+    {
+        return 1;
+    }
+    if (controllo_b == 0)
+    {
+        return 2;
+    }
+    return 0;
 }
